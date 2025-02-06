@@ -1,16 +1,17 @@
 "use client";
+
 import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
-import { FaHome, FaUsers, FaHotel, FaCogs, FaCaretDown } from "react-icons/fa"; // Ícones importados
+import { FaHome, FaUsers, FaHotel, FaCogs, FaCaretDown } from "react-icons/fa";
 
 const Navbar = () => {
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [isRegisterOpen, setIsRegisterOpen] = useState(false);
+  const [isClient, setIsClient] = useState(false); // Para verificar se está no cliente
 
-  // Refs para os modais
-  const loginModalRef = useRef(null);
-  const registerModalRef = useRef(null);
+  const loginModalRef = useRef<HTMLDivElement | null>(null);
+  const registerModalRef = useRef<HTMLDivElement | null>(null);
 
   const navigation = [
     { href: "/", label: "Página Inicial", icon: <FaHome /> },
@@ -18,35 +19,31 @@ const Navbar = () => {
       { href: "/habblive/users", label: "Usuários" },
       { href: "/habblive/settings", label: "Configurações" },
     ] },
-    {
-      label: "Habblive Hotel",
-      icon: <FaHotel />,
-      submenu: [
-        { href: "/hotel/rooms", label: "Quartos" },
-        { href: "/hotel/staff", label: "Equipe" },
-        { href: "/hotel/events", label: "Eventos" },
-      ],
-    },
+    { label: "Habblive Hotel", icon: <FaHotel />, submenu: [
+      { href: "/hotel/rooms", label: "Quartos" },
+      { href: "/hotel/staff", label: "Equipe" },
+      { href: "/hotel/events", label: "Eventos" },
+    ] },
     { href: "/", label: "APIs", icon: <FaCogs />, submenu: [
       { href: "/apis/docs", label: "Documentação" },
       { href: "/apis/status", label: "Status" },
     ] },
   ];
 
-  if (typeof window === 'undefined') return null; // Previne erro de Hydration, evitando renderização no servidor
+  useEffect(() => {
+    setIsClient(true); // Atualiza o estado para indicar que estamos no cliente
+  }, []);
 
-  // Funções para abrir e fechar modais
   const openLoginModal = () => setIsLoginOpen(true);
   const closeLoginModal = () => setIsLoginOpen(false);
   const openRegisterModal = () => setIsRegisterOpen(true);
   const closeRegisterModal = () => setIsRegisterOpen(false);
 
-  // Função para fechar o modal ao clicar fora
   const handleClickOutside = (e: MouseEvent) => {
-    if (loginModalRef.current && !loginModalRef.current.contains(e.target)) {
+    if (loginModalRef.current && !loginModalRef.current.contains(e.target as Node)) {
       closeLoginModal();
     }
-    if (registerModalRef.current && !registerModalRef.current.contains(e.target)) {
+    if (registerModalRef.current && !registerModalRef.current.contains(e.target as Node)) {
       closeRegisterModal();
     }
   };
@@ -57,6 +54,9 @@ const Navbar = () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
+  // Só renderiza o Navbar no cliente
+  if (!isClient) return null;
 
   return (
     <nav className="bg-[#0d2b43] text-white p-4 flex justify-between items-center relative shadow-lg">
@@ -109,7 +109,7 @@ const Navbar = () => {
       {/* Modal de Login */}
       {isLoginOpen && (
         <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center z-50">
-          <div ref={loginModalRef} className="bg-white p-6 rounded-lg w-96">
+          <div ref={loginModalRef} className="bg-white p-6 rounded-lg w-96 shadow-lg">
             <h2 className="text-2xl font-semibold mb-4">Login</h2>
             <form>
               <div className="mb-4">
@@ -130,7 +130,7 @@ const Navbar = () => {
       {/* Modal de Registro */}
       {isRegisterOpen && (
         <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center z-50">
-          <div ref={registerModalRef} className="bg-white p-6 rounded-lg w-96">
+          <div ref={registerModalRef} className="bg-white p-6 rounded-lg w-96 shadow-lg">
             <h2 className="text-2xl font-semibold mb-4">Registre-se</h2>
             <form>
               <div className="mb-4">
