@@ -1,3 +1,4 @@
+//components/RadioPlayer
 "use client";
 
 import { useState, useEffect, useRef } from "react";
@@ -103,7 +104,7 @@ const RadioPlayer = () => {
         </button>
       </motion.div>
 
-      <audio ref={audioRef} src="https://path-to-your-audio-stream" hidden />
+      <audio ref={audioRef} src="https://sonicpanel.oficialserver.com/8342/;" hidden />
 
       <AnimatePresence>
         {isModalOpen && (
